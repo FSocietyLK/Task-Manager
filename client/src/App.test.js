@@ -1,13 +1,23 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import {
+  render,
+  screen,
+  act,
+  fireEvent,
+  waitFor,
+} from "@testing-library/react";
 import axios from "axios";
 import App from "./App";
 
 jest.mock("axios");
 
+afterEach(() => jest.clearAllMocks());
+
 describe("App", () => {
-  it("should render Task Manager title", () => {
+  it("should render Task Manager title", async () => {
+    axios.get.mockResolvedValueOnce({ data: [] });
     render(<App />);
+    await waitFor(() => screen.getByText("Task Manager"));
     const titleElement = screen.getByText("Task Manager");
     expect(titleElement).toBeInTheDocument();
   });
@@ -16,20 +26,25 @@ describe("App", () => {
     axios.post.mockResolvedValueOnce({
       data: { id: 3, title: "New Task", completed: false },
     });
+    axios.get.mockResolvedValueOnce({
+      data: [],
+    });
 
     render(<App />);
-    const taskInput = screen.getByLabelText("Task");
+    const taskInput = screen.getByPlaceholderText("New Task");
     const addButton = screen.getByText("Add Task");
 
     fireEvent.change(taskInput, { target: { value: "New Task" } });
-    fireEvent.click(addButton);
+    await act(async () => {
+      fireEvent.click(addButton);
+    });
 
     expect(axios.post).toHaveBeenCalledTimes(1);
-    expect(axios.post).toHaveBeenCalledWith("/api/tasks", {
+    expect(axios.post).toHaveBeenCalledWith("http://localhost:8000/api/tasks", {
       title: "New Task",
     });
 
-    await screen.findByText("New Task");
+    await waitFor(() => screen.getByText("New Task"));
   });
 
   it("should mark a task as completed", async () => {
@@ -38,18 +53,26 @@ describe("App", () => {
       { id: 2, title: "Task 2", completed: false },
     ];
     axios.get.mockResolvedValueOnce({ data: tasks });
+    axios.put.mockResolvedValueOnce({
+      data: { id: 1, title: "Task 1", completed: true },
+    });
 
     render(<App />);
     await screen.findAllByRole("checkbox");
 
     const checkbox = screen.getAllByRole("checkbox")[0];
-    fireEvent.click(checkbox);
+    await act(async () => {
+      fireEvent.click(checkbox);
+    });
 
     expect(axios.put).toHaveBeenCalledTimes(1);
-    expect(axios.put).toHaveBeenCalledWith("/api/tasks/1", {
-      title: "Task 1",
-      completed: true,
-    });
+    expect(axios.put).toHaveBeenCalledWith(
+      "http://localhost:8000/api/tasks/1",
+      {
+        title: "Task 1",
+        completed: true,
+      }
+    );
   });
 
   it("should delete a task", async () => {
@@ -58,14 +81,19 @@ describe("App", () => {
       { id: 2, title: "Task 2", completed: false },
     ];
     axios.get.mockResolvedValueOnce({ data: tasks });
+    axios.delete.mockResolvedValueOnce({});
 
     render(<App />);
-    await screen.findAllByRole("button");
+    await screen.findAllByText("Delete");
 
-    const deleteButton = screen.getAllByRole("button")[0];
-    fireEvent.click(deleteButton);
+    const deleteButton = screen.getAllByText("Delete")[0];
+    await act(async () => {
+      fireEvent.click(deleteButton);
+    });
 
     expect(axios.delete).toHaveBeenCalledTimes(1);
-    expect(axios.delete).toHaveBeenCalledWith("/api/tasks/1");
+    expect(axios.delete).toHaveBeenCalledWith(
+      "http://localhost:8000/api/tasks/1"
+    );
   });
 });

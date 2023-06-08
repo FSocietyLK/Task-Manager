@@ -1,7 +1,8 @@
 const express = require("express");
+const cors = require("cors");
 const app = express();
-const PORT = 3000;
 
+app.use(cors());
 app.use(express.json());
 
 // Mock tasks data
@@ -33,8 +34,8 @@ app.put("/api/tasks/:id", (req, res) => {
   if (!task) {
     return res.status(404).json({ message: "Task not found" });
   }
-  task.title = title || task.title;
-  task.completed = completed || task.completed;
+  task.title = title !== undefined ? title : task.title;
+  task.completed = completed !== undefined ? completed : task.completed;
   res.json(task);
 });
 
@@ -44,6 +45,4 @@ app.delete("/api/tasks/:id", (req, res) => {
   res.sendStatus(204);
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+module.exports = app;
