@@ -1,0 +1,28 @@
+# Ignore node_modules directory
+node_modules/
+
+# Ignore logs
+*.log
+
+# Ignore .git directory
+.git/
+
+# Ignore .env files as they usually contain sensitive information
+.env
+
+# Ignore other non-essential files
+.DS_Store
+*.pem
+*.swp
+
+# Ignore Dockerfile and .dockerignore
+Dockerfile
+.dockerignore
+
+# Ignore build directory. This is where create-react-app generates a production build
+# We will generate this inside the Docker container, so we don't need it in the context
+build/
+
+# Ignore test and coverage directories
+__tests__/
+coverage/

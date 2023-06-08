@@ -1,0 +1,30 @@
+# Ignore node_modules directory
+node_modules/
+
+# Ignore logs
+*.log
+
+# Ignore the npm debug log file
+npm-debug.log
+
+# Ignore .git directory
+.git/
+
+# Ignore .env files as they usually contain sensitive information
+.env
+
+# Ignore other non-essential files
+.DS_Store
+*.pem
+*.swp
+
+# Ignore Dockerfile and .dockerignore
+Dockerfile
+.dockerignore
+
+# Ignore build and distribution directories
+build/
+dist/
+
+# Ignore .next directory for Next.js applications
+.next/
