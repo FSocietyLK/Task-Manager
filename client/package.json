@@ -19,7 +19,12 @@
     "eject": "react-scripts eject"
   },
   "jest": {
-    "transformIgnorePatterns": ["/node_modules/(?!axios).+\\.js$"]
+    "testMatch": [
+      "**/?(*.)+(spec|test).[jt]s?(x)"
+    ],
+    "transformIgnorePatterns": [
+      "/node_modules/(?!axios).+\\.js$"
+    ]
   },
   "eslintConfig": {
     "extends": [
